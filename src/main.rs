@@ -16,8 +16,13 @@ fn main() {
         match stream {
             Ok(mut stream) => {
                 let mut buf = [0; 512];
-                stream.read(&mut buf).unwrap();
-                stream.write(b"+PONG\r\n").unwrap();
+                loop {
+                    if stream.read(&mut buf).unwrap() == 0 {
+                        break;
+                    }
+                    println!("{}", String::from_utf8_lossy(&buf));
+                    stream.write("+PONG\r\n".as_bytes()).unwrap();
+                }
             }
 
             Err(e) => {
